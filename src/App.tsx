@@ -1,73 +1,16 @@
 import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, BookOpen, CalendarDays, Check, ChevronRight, Filter, Globe2, Mail, MapPin, Menu, Search, Target, Users, X } from 'lucide-react';
+import { ArrowUpRight, Check, ChevronRight, Filter, Globe2, Mail, MapPin, Search } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Link, Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 import { ErrorBoundary } from '@/components/error-boundary';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { committees, members, pillars, stories, type Committee, type Pillar } from '@/data/site';
 
 const queryClient = new QueryClient();
-
-const navItems = [
-  ['About', '/about'], ['Priorities', '/priorities'], ['Committees', '/committees'],
-  ['People', '/people'], ['Projects', '/projects'], ['Knowledge Hub', '/knowledge-hub'],
-  ['News & Events', '/news-events'], ['Contact', '/contact'],
-] as const;
-
-function Header() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [location] = useLocation();
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
-  useEffect(() => setOpen(false), [location]);
-  return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#f4f0e6]/95 shadow-[0_1px_0_rgba(22,53,43,.12)] backdrop-blur-sm' : 'bg-[#f4f0e6]'}`}>
-      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
-        <Link href="/" className="flex items-center gap-3" data-testid="link-logo">
-          <span className="grid h-10 w-10 place-items-center bg-[#16352b] text-[#c89b3c]">
-            <span className="display text-[22px] font-bold leading-none">S</span>
-          </span>
-          <span className="leading-none">
-            <span className="block text-[16px] font-bold tracking-[.16em] text-[#16352b]">STAND <span className="text-[#c89b3c]">&amp;</span> STEP</span>
-            <span className="mono mt-1 block text-[8px] tracking-[.19em] text-[#66706b]">Knowledge into action</span>
-          </span>
-        </Link>
-        <nav className="hidden items-center gap-5 xl:flex" aria-label="Main navigation">
-          {navItems.map(([label, href]) => <Link key={href} href={href} className={`text-[11px] font-bold tracking-[.07em] transition-colors hover:text-[#227a5b] ${location === href ? 'text-[#227a5b]' : 'text-[#1b211f]'}`} data-testid={`link-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</Link>)}
-        </nav>
-        <Link href="/get-involved" className="hidden items-center gap-2 bg-[#227a5b] px-4 py-3 text-[11px] font-bold tracking-[.1em] text-white transition-colors hover:bg-[#16352b] focus:outline-none focus:ring-2 focus:ring-[#c89b3c] focus:ring-offset-2 sm:flex" data-testid="link-join-network">JOIN THE NETWORK <ArrowUpRight size={14} /></Link>
-        <button onClick={() => setOpen(!open)} className="grid h-11 w-11 place-items-center text-[#16352b] xl:hidden" aria-label={open ? 'Close navigation' : 'Open navigation'} data-testid="button-mobile-menu">{open ? <X /> : <Menu />}</button>
-      </div>
-      {open && <div className="border-t border-[#16352b]/10 bg-[#f4f0e6] px-5 pb-7 pt-3 xl:hidden">
-        {navItems.map(([label, href]) => <Link key={href} href={href} className="flex items-center justify-between border-b border-[#16352b]/10 py-4 text-sm font-semibold text-[#16352b]" data-testid={`link-mobile-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}<ChevronRight size={16} /></Link>)}
-        <Link href="/get-involved" className="mt-5 flex items-center justify-center gap-2 bg-[#227a5b] px-4 py-4 text-xs font-bold tracking-[.1em] text-white" data-testid="link-mobile-join">JOIN THE NETWORK <ArrowUpRight size={14} /></Link>
-      </div>}
-    </header>
-  );
-}
-
-function Footer() {
-  const [subscribed, setSubscribed] = useState(false);
-  return <footer className="bg-[#16352b] text-[#f4f0e6]">
-    <div className="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.35fr_.8fr_.8fr_.8fr] lg:px-12 lg:py-20">
-      <div><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center border border-[#c89b3c] text-[#c89b3c]"><span className="display text-[22px] font-bold">S</span></span><span className="text-[16px] font-bold tracking-[.16em]">STAND <span className="text-[#c89b3c]">&amp;</span> STEP</span></div><p className="mt-6 max-w-xs text-sm leading-7 text-[#b6c0b8]">Strategic Agenda for Northern Development: Science, Technology &amp; Engineering Perspective.</p><div className="mt-7 flex items-center gap-2 text-[10px] text-[#b6c0b8]"><MapPin size={13} className="text-[#c89b3c]" /> NORTHERN NIGERIA · NIGERIA</div></div>
-      <FooterColumn title="Explore" links={navItems.slice(0, 4)} />
-      <FooterColumn title="Work with us" links={[['Projects', '/projects'], ['Get involved', '/get-involved'], ['Partner with us', '/contact'], ['Support STAND & STEP', '/get-involved']]} />
-      <div><p className="mono text-[10px] text-[#c89b3c]">Stay close to the work</p><p className="mt-4 text-sm leading-6 text-[#b6c0b8]">Occasional notes on evidence, people and progress.</p>{subscribed ? <p className="mt-5 text-xs leading-5 text-[#c89b3c]">Demo signup complete. Nothing was sent or stored.</p> : <form className="mt-5 flex border-b border-[#718078]" onSubmit={(e) => { e.preventDefault(); setSubscribed(true); }}><input required type="email" placeholder="Your email address" className="min-w-0 flex-1 bg-transparent py-3 text-sm text-white outline-none placeholder:text-[#8b9a90]" aria-label="Email address" data-testid="input-footer-email" /><button aria-label="Subscribe to updates" className="px-2 text-[#c89b3c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89b3c]" data-testid="button-subscribe"><ArrowUpRight size={17} /></button></form>}</div>
-    </div>
-    <div className="border-t border-white/10"><div className="mx-auto flex max-w-[1440px] flex-col gap-3 px-5 py-5 text-[10px] tracking-[.06em] text-[#93a39a] sm:px-8 md:flex-row md:items-center md:justify-between lg:px-12"><span>© 2026 STAND &amp; STEP.</span><span>Built for shared progress, not individual credit.</span></div></div>
-  </footer>;
-}
-
-function FooterColumn({ title, links }: { title: string; links: readonly (readonly [string, string])[] }) {
-  return <div><p className="mono text-[10px] text-[#c89b3c]">{title}</p><div className="mt-4 grid gap-3">{links.map(([label, href]) => <Link key={`${href}-${label}`} href={href} className="w-fit text-sm text-[#f4f0e6] transition-colors hover:text-[#c89b3c]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</Link>)}</div></div>;
-}
 
 function SectionLabel({ children, light = false }: { children: ReactNode; light?: boolean }) {
   return <div className={`mono flex items-center gap-3 text-[10px] font-medium ${light ? 'text-[#c89b3c]' : 'text-[#227a5b]'}`}><span className="h-px w-8 bg-current" />{children}</div>;
