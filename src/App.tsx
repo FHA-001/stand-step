@@ -10,6 +10,10 @@ import Footer from '@/components/layout/Footer';
 import HomePage from '@/pages/HomePage';
 import AboutPage from '@/pages/AboutPage';
 import PrioritiesPage from '@/pages/PrioritiesPage';
+import SciencePage from '@/pages/SciencePage';
+import TechnologyPage from '@/pages/TechnologyPage';
+import EngineeringPage from '@/pages/EngineeringPage';
+import PerspectivesPage from '@/pages/PerspectivesPage';
 import CommitteesPage from '@/pages/CommitteesPage';
 import PeoplePage from '@/pages/PeoplePage';
 import ProjectsPage from '@/pages/ProjectsPage';
@@ -22,7 +26,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   useEffect(() => { document.title = 'STAND & STEP — Knowledge into action'; const description = document.querySelector('meta[name="description"]') || document.createElement('meta'); description.setAttribute('name', 'description'); description.setAttribute('content', 'An institutional platform connecting expertise to practical development action across Northern Nigeria.'); document.head.appendChild(description); }, []);
-  return <><Header /><main><Switch><Route path="/" component={HomePage} /><Route path="/about" component={AboutPage} /><Route path="/priorities" component={PrioritiesPage} /><Route path="/committees" component={CommitteesPage} /><Route path="/people" component={PeoplePage} /><Route path="/projects" component={ProjectsPage} /><Route path="/knowledge-hub" component={KnowledgeHubPage} /><Route path="/get-involved" component={GetInvolvedPage} /><Route path="/news-events" component={NewsEventsPage} /><Route path="/contact" component={ContactPage} /><Route component={NotFound} /></Switch></main><Footer /></>;
+  return <><Header /><main><Switch><Route path="/" component={HomePage} /><Route path="/about" component={AboutPage} /><Route path="/priorities/science" component={SciencePage} /><Route path="/priorities/technology" component={TechnologyPage} /><Route path="/priorities/engineering" component={EngineeringPage} /><Route path="/priorities/perspectives" component={PerspectivesPage} /><Route path="/priorities" component={PrioritiesPage} /><Route path="/committees" component={CommitteesPage} /><Route path="/people" component={PeoplePage} /><Route path="/projects" component={ProjectsPage} /><Route path="/knowledge-hub" component={KnowledgeHubPage} /><Route path="/get-involved" component={GetInvolvedPage} /><Route path="/news-events" component={NewsEventsPage} /><Route path="/contact" component={ContactPage} /><Route component={NotFound} /></Switch></main><Footer /></>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) { const [location] = useLocation(); return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>; }
