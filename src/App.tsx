@@ -1,47 +1,18 @@
 import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Check, ChevronRight, Filter, Globe2, Mail, MapPin, Search } from 'lucide-react';
+import { ArrowUpRight, Check, Filter, Globe2, Mail, MapPin, Search } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Link, Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 import { ErrorBoundary } from '@/components/error-boundary';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { committees, members, pillars, stories, type Committee, type Pillar } from '@/data/site';
+import { committees, members, pillars, stories } from '@/data/site';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import SectionLabel from '@/components/shared/SectionLabel';
+import HomePage from '@/pages/HomePage';
 
 const queryClient = new QueryClient();
-
-function SectionLabel({ children, light = false }: { children: ReactNode; light?: boolean }) {
-  return <div className={`mono flex items-center gap-3 text-[10px] font-medium ${light ? 'text-[#c89b3c]' : 'text-[#227a5b]'}`}><span className="h-px w-8 bg-current" />{children}</div>;
-}
-
-function ButtonLink({ href, children, dark = false }: { href: string; children: ReactNode; dark?: boolean }) {
-  return <Link href={href} className={`inline-flex items-center gap-2 border px-5 py-3 text-[11px] font-bold tracking-[.1em] transition-all hover:-translate-y-0.5 ${dark ? 'border-[#f4f0e6]/30 text-[#f4f0e6] hover:border-[#c89b3c] hover:text-[#c89b3c]' : 'border-[#16352b] text-[#16352b] hover:bg-[#16352b] hover:text-[#f4f0e6]'}`} data-testid={`link-cta-${href.replaceAll('/', '') || 'home'}`}>{children}<ArrowUpRight size={14} /></Link>;
-}
-
-function Home() {
-  const [activePillar, setActivePillar] = useState<Pillar>(pillars[0]);
-  return <div>
-    <section className="hero-photo relative min-h-[680px] overflow-hidden pt-[76px] text-[#f4f0e6] lg:min-h-[750px]">
-      <div className="dark-grid absolute inset-0 opacity-30" />
-      <div className="relative mx-auto grid max-w-[1440px] items-end gap-16 px-5 pb-16 pt-24 sm:px-8 lg:grid-cols-[1.1fr_.9fr] lg:px-12 lg:pb-24 lg:pt-32">
-        <div className="reveal max-w-3xl"><SectionLabel light>AN INSTITUTIONAL PLATFORM FOR NORTHERN NIGERIA</SectionLabel><h1 className="display mt-7 text-[clamp(3.2rem,7.8vw,7.4rem)] leading-[.98]">Building a better Northern Nigeria <em className="font-normal text-[#c89b3c]">through</em> knowledge, innovation &amp; action.</h1><p className="mt-8 max-w-lg text-base leading-7 text-[#d2d8d2]">STAND &amp; STEP brings the region’s problem-solvers into one serious, practical network — to ask better questions, build what works and move evidence into the world.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/get-involved" className="inline-flex items-center gap-2 bg-[#c89b3c] px-5 py-3 text-[11px] font-bold tracking-[.1em] text-[#16352b] transition-colors hover:bg-[#f4f0e6]" data-testid="link-hero-join">JOIN THE NETWORK <ArrowUpRight size={14} /></Link><ButtonLink href="/about" dark>WHY STAND &amp; STEP</ButtonLink></div></div>
-        <div className="reveal reveal-delay-2 hidden justify-self-end self-end lg:flex lg:max-w-xs lg:flex-col"><div className="mb-5 border-l border-[#c89b3c] pl-4 text-sm leading-6 text-[#d2d8d2]">Science. Technology. Engineering. Perspectives. Action.</div><div className="mono text-[9px] tracking-[.15em] text-[#a9b5ad]">2026 · ESTABLISHMENT &amp; STRATEGIC FRAMEWORK</div></div>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 border-t border-white/20"><div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-4 text-[10px] text-[#b6c0b8] sm:px-8 lg:px-12"><span className="mono">01 / 04 — THE WORK AHEAD</span><span className="hidden items-center gap-2 sm:flex">SCROLL TO EXPLORE <span className="h-8 w-px bg-[#c89b3c]" /></span></div></div>
-    </section>
-    <section className="site-grid bg-[#f4f0e6] py-20 sm:py-28"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12"><div className="grid gap-10 lg:grid-cols-[.85fr_1.4fr]"><div><SectionLabel>OUR PURPOSE</SectionLabel><h2 className="display mt-5 max-w-sm text-4xl leading-tight text-[#16352b] sm:text-5xl">Expertise is abundant. <span className="text-[#227a5b]">Connection</span> is the work.</h2></div><div className="max-w-2xl lg:pt-8"><p className="text-xl leading-8 text-[#1b211f] sm:text-2xl">We are building the connective tissue between people who know, people who make and people who decide.</p><p className="mt-6 max-w-xl text-sm leading-7 text-[#66706b]">From a researcher’s finding to a reliable service. From an engineer’s prototype to a working system. From a policy idea to a public outcome. STAND &amp; STEP exists for that journey.</p><ButtonLink href="/about">READ OUR APPROACH</ButtonLink></div></div><div className="mt-20 grid border-y border-[#16352b]/15 sm:grid-cols-3"><Stat value="20" label="Strategic committees" /><Stat value="04" label="Connected practice pillars" /><Stat value="01" label="Shared regional agenda" /></div></div></section>
-    <section className="bg-[#16352b] py-20 text-[#f4f0e6] sm:py-28"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12"><div className="flex flex-col justify-between gap-8 md:flex-row md:items-end"><div><SectionLabel light>THE PLATFORM</SectionLabel><h2 className="display mt-5 max-w-2xl text-4xl leading-tight sm:text-6xl">Four ways to move a region forward.</h2></div><p className="max-w-xs text-sm leading-6 text-[#b6c0b8]">The pillars share one institutional system — with distinct expertise, a common standard and room for the right questions.</p></div><div className="mt-14 grid border-t border-white/20 lg:grid-cols-[.8fr_1.2fr]"><div className="grid grid-cols-2 border-b border-white/20 lg:block lg:border-b-0 lg:border-r">{pillars.map((pillar) => <button key={pillar.id} onClick={() => setActivePillar(pillar)} className={`flex w-full items-center justify-between border-b border-r border-white/10 px-3 py-5 text-left transition-colors last:border-b-0 sm:px-5 lg:border-r-0 ${activePillar.id === pillar.id ? 'bg-[#227a5b] text-white' : 'text-[#b6c0b8] hover:bg-white/5 hover:text-white'}`} data-testid={`button-pillar-${pillar.id}`}><span><span className="mono block text-[9px] text-[#c89b3c]">{pillar.index}</span><span className="mt-2 block text-sm font-semibold sm:text-base">{pillar.title}</span></span><ChevronRight size={16} /></button>)}</div><div className="relative min-h-[300px] p-7 sm:p-12"><div className="absolute right-8 top-7 text-[8rem] font-bold leading-none text-white/[.035] sm:text-[13rem]">{activePillar.index}</div><div className="relative max-w-lg"><span className="mono text-[10px]" style={{ color: activePillar.accent }}>PILLAR {activePillar.index}</span><h3 className="display mt-5 text-4xl sm:text-5xl">{activePillar.title}</h3><p className="mt-6 text-lg leading-7 text-[#d2d8d2]">{activePillar.description}</p><p className="mt-4 text-sm leading-6 text-[#aab7af]">{activePillar.detail}</p><Link href="/priorities" className="mt-8 inline-flex items-center gap-2 text-[11px] font-bold tracking-[.1em] text-[#c89b3c] hover:text-white" data-testid="link-pillar-explore">EXPLORE THE PRIORITIES <ArrowUpRight size={14} /></Link></div></div></div></div></section>
-    <section className="site-grid bg-[#e8e6df] py-20 sm:py-28"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12"><div className="grid gap-10 lg:grid-cols-[1fr_1fr]"><div><SectionLabel>THE COMMITMENT</SectionLabel><h2 className="display mt-5 max-w-xl text-4xl leading-tight text-[#16352b] sm:text-6xl">20 Strategic Committees. <span className="text-[#227a5b]">One shared agenda.</span> A commitment to impact.</h2></div><div className="flex flex-col justify-end"><p className="max-w-md text-base leading-7 text-[#66706b]">The network is organised around the issues that define the region’s next chapter — not around sectors in isolation.</p><ButtonLink href="/committees">MEET THE COMMITTEES</ButtonLink></div></div><div className="mt-14 grid gap-px bg-[#16352b]/15 md:grid-cols-3">{committees.slice(0, 3).map((committee, i) => <CommitteeCard key={committee.title} committee={committee} index={i} />)}</div></div></section>
-    <section className="bg-[#f4f0e6] py-20 sm:py-28"><div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12"><div className="flex items-end justify-between border-b border-[#16352b]/15 pb-5"><div><SectionLabel>FROM THE PLATFORM</SectionLabel><h2 className="display mt-4 text-4xl text-[#16352b] sm:text-5xl">Ideas with somewhere to go.</h2></div><ButtonLink href="/knowledge-hub">VIEW KNOWLEDGE HUB</ButtonLink></div><div className="grid gap-0 divide-y divide-[#16352b]/15 lg:grid-cols-[1.2fr_1fr_1fr] lg:divide-x lg:divide-y-0">{stories.map((story, i) => <StoryCard story={story} featured={i === 0} key={story.title} />)}</div></div></section>
-    <section className="bg-[#227a5b] py-20 text-[#f4f0e6] sm:py-28"><div className="mx-auto grid max-w-[1440px] gap-10 px-5 sm:px-8 lg:grid-cols-[1.2fr_.8fr] lg:items-end lg:px-12"><div><SectionLabel light>AN OPEN INVITATION</SectionLabel><h2 className="display mt-5 max-w-3xl text-5xl leading-[1.02] sm:text-7xl">Be part of the solution.</h2><p className="mt-6 max-w-lg text-base leading-7 text-[#d7e1db]">We cannot transform Northern Nigeria alone. Bring your questions, your practice, your institution — and help make the work useful.</p></div><div className="lg:justify-self-end"><ButtonLink href="/get-involved" dark>FIND YOUR PLACE IN THE NETWORK</ButtonLink></div></div></section>
-  </div>;
-}
-
-function Stat({ value, label }: { value: string; label: string }) { return <div className="flex items-baseline gap-4 border-b border-[#16352b]/15 px-2 py-6 last:border-0 sm:border-b-0 sm:border-r sm:px-7 sm:first:pl-0 sm:last:border-0"><span className="display text-5xl text-[#227a5b] sm:text-6xl">{value}</span><span className="mono text-[9px] text-[#66706b]">{label}</span></div>; }
-function CommitteeCard({ committee, index }: { committee: Committee; index: number }) { return <Link href="/committees" className="group min-h-[220px] bg-[#f4f0e6] p-7 transition-colors hover:bg-[#16352b] hover:text-[#f4f0e6] sm:p-9" data-testid={`card-committee-${index}`}><div className="flex items-start justify-between"><span className="mono text-[9px] text-[#66706b] group-hover:text-[#c89b3c]">0{index + 1} / COMMITTEE</span><ArrowUpRight size={17} className="text-[#227a5b] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-[#c89b3c]" /></div><h3 className="display mt-16 text-2xl">{committee.title}</h3><p className="mt-2 text-sm text-[#66706b] group-hover:text-[#b6c0b8]">{committee.focus}</p></Link>; }
-function StoryCard({ story, featured }: { story: (typeof stories)[number]; featured?: boolean }) { return <Link href="/knowledge-hub" className={`group block p-7 transition-colors hover:bg-[#e8e6df] sm:p-9 ${featured ? 'lg:row-span-2' : ''}`} data-testid={`card-story-${story.type.toLowerCase().replaceAll(' ', '-')}`}><div className="flex items-center justify-between"><span className="mono text-[9px] text-[#227a5b]">{story.type}</span><span className="mono text-[9px] text-[#66706b]">{story.date}</span></div><h3 className={`display mt-12 leading-tight text-[#16352b] ${featured ? 'text-3xl sm:text-4xl' : 'text-2xl'}`}>{story.title}</h3><p className="mt-5 text-sm leading-6 text-[#66706b]">{story.excerpt}</p><span className="mt-8 inline-flex items-center gap-2 text-[10px] font-bold tracking-[.1em] text-[#16352b] group-hover:text-[#227a5b]">READ MORE <ArrowUpRight size={14} /></span></Link>; }
 
 function FormPanel({ kind }: { kind: 'contact' | 'join' | 'partner' | 'support' }) {
   const [sent, setSent] = useState(false);
@@ -68,6 +39,44 @@ function PageIntro({ eyebrow, title, copy }: { eyebrow: string; title: string; c
 
 function GenericPage({ title, eyebrow, copy, children }: { title: string; eyebrow: string; copy: string; children?: ReactNode }) { return <div className="bg-[#f4f0e6]"><PageIntro eyebrow={eyebrow} title={title} copy={copy} /><section className="site-grid min-h-[45vh] py-16 sm:py-24"><div className="mx-auto max-w-[1200px] px-5 sm:px-8">{children || <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]"><div><SectionLabel>DEMO OVERVIEW</SectionLabel><h2 className="display mt-5 text-4xl text-[#16352b]">A clear place for shared work.</h2></div><p className="max-w-2xl text-lg leading-8 text-[#66706b]">This route is ready for the next layer of STAND &amp; STEP content: evidence, people, case studies and decisions that make Northern Nigeria stronger. The design system and content structure are intentionally prepared for Supabase integration later.</p></div>}</div></section></div>; }
 
+
+function StoryCard({
+  story,
+  featured,
+}: {
+  story: (typeof stories)[number];
+  featured?: boolean;
+}) {
+  return (
+    <Link
+      href="/knowledge-hub"
+      className={`group block p-7 transition-colors hover:bg-[#e8e6df] sm:p-9 ${
+        featured ? 'lg:row-span-2' : ''
+      }`}
+      data-testid={`card-story-${story.type.toLowerCase().replaceAll(' ', '-')}`}
+    >
+      <div className="flex items-center justify-between">
+        <span className="mono text-[9px] text-[#227a5b]">{story.type}</span>
+        <span className="mono text-[9px] text-[#66706b]">{story.date}</span>
+      </div>
+
+      <h3
+        className={`display mt-12 leading-tight text-[#16352b] ${
+          featured ? 'text-3xl sm:text-4xl' : 'text-2xl'
+        }`}
+      >
+        {story.title}
+      </h3>
+
+      <p className="mt-5 text-sm leading-6 text-[#66706b]">{story.excerpt}</p>
+
+      <span className="mt-8 inline-flex items-center gap-2 text-[10px] font-bold tracking-[.1em] text-[#16352b] group-hover:text-[#227a5b]">
+        READ MORE <ArrowUpRight size={14} />
+      </span>
+    </Link>
+  );
+}
+
 function ContactPage() {
   const [kind, setKind] = useState<'contact' | 'partner' | 'support'>('contact');
   const options: Array<['contact' | 'partner' | 'support', string]> = [['contact', 'General enquiry'], ['partner', 'Partner with us'], ['support', 'Support the platform']];
@@ -76,7 +85,7 @@ function ContactPage() {
 
 function AppContent() {
   useEffect(() => { document.title = 'STAND & STEP — Knowledge into action'; const description = document.querySelector('meta[name="description"]') || document.createElement('meta'); description.setAttribute('name', 'description'); description.setAttribute('content', 'An institutional platform connecting expertise to practical development action across Northern Nigeria.'); document.head.appendChild(description); }, []);
-  return <><Header /><main><Switch><Route path="/" component={Home} /><Route path="/about"><GenericPage eyebrow="ABOUT STAND & STEP" title="Harnessing expertise for Northern development." copy="We are building an independent, practical platform for people who believe the region’s future should be shaped by its own evidence, ingenuity and leadership." /></Route><Route path="/priorities"><GenericPage eyebrow="THE WORK / PRIORITIES" title="Think. Connect. Innovate. Engineer. Act." copy="A shared agenda for the questions that matter most. Explore the four connected pillars of STAND & STEP."><div className="grid gap-5 md:grid-cols-2">{pillars.map(pillar => <div className="border border-[#16352b]/15 bg-[#e8e6df] p-8" key={pillar.id}><span className="mono text-[10px] text-[#227a5b]">{pillar.index} / PILLAR</span><h2 className="display mt-12 text-3xl text-[#16352b]">{pillar.title}</h2><p className="mt-3 text-sm leading-6 text-[#66706b]">{pillar.description}</p><p className="mt-3 text-sm leading-6 text-[#66706b]">{pillar.detail}</p></div>)}</div></GenericPage></Route><Route path="/committees" component={CommitteesPage} /><Route path="/people" component={Directory} /><Route path="/projects"><GenericPage eyebrow="PROJECTS / PRACTICAL ACTION" title="From good questions to useful outcomes." copy="Project case studies and impact information will appear here when publicly approved project details are available." /></Route><Route path="/knowledge-hub"><GenericPage eyebrow="KNOWLEDGE HUB" title="Evidence worth sharing." copy="Research, policy, innovation, data and opportunity resources will appear here as the network publishes them."><div className="grid gap-px bg-[#16352b]/15 md:grid-cols-3">{stories.map((story, index) => <StoryCard story={story} key={story.title || index} />)}</div></GenericPage></Route><Route path="/get-involved"><div className="bg-[#f4f0e6]"><PageIntro eyebrow="GET INVOLVED" title="We cannot transform Northern Nigeria alone." copy="There is a place for your expertise, your institution, your questions and your support." /><section className="site-grid py-16 sm:py-24"><div className="mx-auto grid max-w-[1200px] gap-12 px-5 sm:px-8 lg:grid-cols-[.8fr_1.2fr]"><div><SectionLabel>JOIN THE NETWORK</SectionLabel><h2 className="display mt-5 text-4xl text-[#16352b]">Bring what you know.</h2><p className="mt-5 text-sm leading-7 text-[#66706b]">Tell us where you work and what you would like to contribute. This demo form is ready to become a member interest flow.</p></div><FormPanel kind="join" /></div></section></div></Route><Route path="/news-events"><GenericPage eyebrow="NEWS & EVENTS" title="The work, in public." copy="News, events and announcements will appear here when publicly approved information is available." /></Route><Route path="/contact" component={ContactPage} /><Route component={NotFound} /></Switch></main><Footer /></>;
+  return <><Header /><main><Switch><Route path="/" component={HomePage} /><Route path="/about"><GenericPage eyebrow="ABOUT STAND & STEP" title="Harnessing expertise for Northern development." copy="We are building an independent, practical platform for people who believe the region’s future should be shaped by its own evidence, ingenuity and leadership." /></Route><Route path="/priorities"><GenericPage eyebrow="THE WORK / PRIORITIES" title="Think. Connect. Innovate. Engineer. Act." copy="A shared agenda for the questions that matter most. Explore the four connected pillars of STAND & STEP."><div className="grid gap-5 md:grid-cols-2">{pillars.map(pillar => <div className="border border-[#16352b]/15 bg-[#e8e6df] p-8" key={pillar.id}><span className="mono text-[10px] text-[#227a5b]">{pillar.index} / PILLAR</span><h2 className="display mt-12 text-3xl text-[#16352b]">{pillar.title}</h2><p className="mt-3 text-sm leading-6 text-[#66706b]">{pillar.description}</p><p className="mt-3 text-sm leading-6 text-[#66706b]">{pillar.detail}</p></div>)}</div></GenericPage></Route><Route path="/committees" component={CommitteesPage} /><Route path="/people" component={Directory} /><Route path="/projects"><GenericPage eyebrow="PROJECTS / PRACTICAL ACTION" title="From good questions to useful outcomes." copy="Project case studies and impact information will appear here when publicly approved project details are available." /></Route><Route path="/knowledge-hub"><GenericPage eyebrow="KNOWLEDGE HUB" title="Evidence worth sharing." copy="Research, policy, innovation, data and opportunity resources will appear here as the network publishes them."><div className="grid gap-px bg-[#16352b]/15 md:grid-cols-3">{stories.map((story, index) => <StoryCard story={story} key={story.title || index} />)}</div></GenericPage></Route><Route path="/get-involved"><div className="bg-[#f4f0e6]"><PageIntro eyebrow="GET INVOLVED" title="We cannot transform Northern Nigeria alone." copy="There is a place for your expertise, your institution, your questions and your support." /><section className="site-grid py-16 sm:py-24"><div className="mx-auto grid max-w-[1200px] gap-12 px-5 sm:px-8 lg:grid-cols-[.8fr_1.2fr]"><div><SectionLabel>JOIN THE NETWORK</SectionLabel><h2 className="display mt-5 text-4xl text-[#16352b]">Bring what you know.</h2><p className="mt-5 text-sm leading-7 text-[#66706b]">Tell us where you work and what you would like to contribute. This demo form is ready to become a member interest flow.</p></div><FormPanel kind="join" /></div></section></div></Route><Route path="/news-events"><GenericPage eyebrow="NEWS & EVENTS" title="The work, in public." copy="News, events and announcements will appear here when publicly approved information is available." /></Route><Route path="/contact" component={ContactPage} /><Route component={NotFound} /></Switch></main><Footer /></>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) { const [location] = useLocation(); return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>; }
